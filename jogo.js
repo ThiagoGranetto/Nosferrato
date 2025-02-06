@@ -20,9 +20,32 @@ musicaDeFundo.volume = 0.3; // Ajuste de volume
 // musicaDeFundo.play();
 
 let frames = 0;
+let ultimoTempo = 0;
+const FPS_DESEJADO = 60; // FPS desejado agora é 60
+const intervaloFrame = 1000 / FPS_DESEJADO; // Intervalo de tempo entre cada frame
 
 const canvas = document.querySelector('canvas');
 const contexto = canvas.getContext('2d');
+
+// [Função loop com controle de FPS]
+function loop(tempoAtual) {
+  const deltaTime = tempoAtual - ultimoTempo;
+
+  if (deltaTime >= intervaloFrame) {
+    ultimoTempo = tempoAtual - (deltaTime % intervaloFrame);
+
+    telaAtiva.desenha();
+    telaAtiva.atualiza();
+    frames++;
+
+    // Limita o número de frames para evitar aceleração
+    if (frames > FPS_DESEJADO) {
+      frames = 0;
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
 
 // [Plano de Fundo]
 const planoDeFundo = {
@@ -529,5 +552,5 @@ window.addEventListener('click', function() {
 // Função para iniciar o jogo quando a imagem galaxy estiver carregada
 function iniciarJogo() {
   mudaParaTela(Telas.INICIO);
-  loop();
+  requestAnimationFrame(loop);
 }
